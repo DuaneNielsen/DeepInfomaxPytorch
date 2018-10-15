@@ -7,6 +7,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.optim import Adam
 from tqdm import tqdm
+from pathlib import Path
 
 
 class DeepInfoMaxLoss(nn.Module):
@@ -76,3 +77,6 @@ if __name__ == '__main__':
             loss.backward()
             optim.step()
 
+        file = Path(r'c:\data\deepinfomax\models\run1\encoder' + str(epoch))
+        file.parent.mkdir(parents=True, exist_ok=True)
+        torch.save(encoder.state_dict(), str(file))
