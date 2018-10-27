@@ -11,7 +11,7 @@ Ported most of the code from rcallands chainer implementation.  Thanks buddy!  h
 
 ![alt_text](images/Figure_1.png "Figure 1")
 
-**Figure 1:**  
+**Figure 1**  
 **Top:** a red lamborghini, **Middle:** 10 closest images in the latent space (L2 distance), **Bottom:** 10 farthest images in the latent space.
 
 Some more results..
