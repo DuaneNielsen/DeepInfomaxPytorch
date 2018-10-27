@@ -7,7 +7,7 @@ Encoding data by maximimizing mutual information between the latent space and in
 
 Ported most of the code from rcallands chainer implementation.  Thanks buddy!  https://github.com/rcalland/deep-INFOMAX
 
-###Results
+### Results
 
 ![alt_text](images/Figure_1.png "Figure 1")
 
