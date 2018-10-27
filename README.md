@@ -1,4 +1,4 @@
-#Deep InfoMax Pytorch
+# Deep InfoMax Pytorch
 
 Pytorch implementation of Deep InfoMax
 https://arxiv.org/abs/1808.06670
