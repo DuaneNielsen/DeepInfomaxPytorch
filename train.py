@@ -8,6 +8,7 @@ import torch.nn.functional as F
 from torch.optim import Adam
 from tqdm import tqdm
 from pathlib import Path
+import statistics as stats
 
 
 class DeepInfoMaxLoss(nn.Module):
@@ -50,7 +51,7 @@ class DeepInfoMaxLoss(nn.Module):
 if __name__ == '__main__':
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    batch_size = 128
+    batch_size = 64
 
     # image size 3, 32, 32
     # batch size must be an even number
@@ -60,23 +61,41 @@ if __name__ == '__main__':
                                   pin_memory=torch.cuda.is_available())
 
     encoder = Encoder().to(device)
-    optim = Adam(encoder.parameters())
     loss_fn = DeepInfoMaxLoss().to(device)
+    optim = Adam(encoder.parameters(), lr=1e-4)
+    loss_optim = Adam(loss_fn.parameters(), lr=1e-4)
 
-    for epoch in range(10):
+    epoch = None
+    root = Path(r'c:\data\deepinfomax\models\run3')
+
+    if epoch is not None and root is not None:
+        enc_file = root / Path('encoder' + str(epoch) + '.wgt')
+        loss_file = root / Path('loss' + str(epoch) + '.wgt')
+        encoder.load_state_dict(torch.load(str(enc_file)))
+        loss_fn.load_state_dict(torch.load(str(loss_file)))
+
+    for epoch in range(1000):
         batch = tqdm(cifar_10_train_l, total=len(cifar_10_train_dt) // batch_size)
+        train_loss = []
         for x, target in batch:
             x = x.to(device)
 
             optim.zero_grad()
+            loss_optim.zero_grad()
             y, M = encoder(x)
             # rotate images to create pairs for comparison
             M_prime = torch.cat((M[1:], M[0].unsqueeze(0)), dim=0)
             loss = loss_fn(y, M, M_prime)
-            batch.set_description('Loss: ' + str(loss.item()))
+            train_loss.append(loss.item())
+            batch.set_description(str(epoch) + ' Loss: ' + str(stats.mean(train_loss[-20:])))
             loss.backward()
             optim.step()
+            loss_optim.step()
 
-        file = Path(r'c:\data\deepinfomax\models\run1\encoder' + str(epoch))
-        file.parent.mkdir(parents=True, exist_ok=True)
-        torch.save(encoder.state_dict(), str(file))
+        if epoch % 10 == 0:
+            root = Path(r'c:\data\deepinfomax\models\run5')
+            enc_file = root / Path('encoder' + str(epoch) + '.wgt')
+            loss_file = root / Path('loss' + str(epoch) + '.wgt')
+            enc_file.parent.mkdir(parents=True, exist_ok=True)
+            torch.save(encoder.state_dict(), str(enc_file))
+            torch.save(loss_fn.state_dict(), str(loss_file))

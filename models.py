@@ -1,6 +1,9 @@
+from pathlib import Path
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch import nn as nn
 
 
 class Encoder(nn.Module):
@@ -69,3 +72,34 @@ class PriorDiscriminator(nn.Module):
         h = F.relu(self.l1(h))
         return torch.sigmoid(self.l2(h))
 
+
+class Classifier(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.l1 = nn.Linear(64, 15)
+        self.bn1 = nn.BatchNorm1d(15)
+        self.l2 = nn.Linear(15, 10)
+        self.bn2 = nn.BatchNorm1d(10)
+        self.l3 = nn.Linear(10, 10)
+        self.bn3 = nn.BatchNorm1d(10)
+
+    def forward(self, x):
+        encoded, _ = x[0], x[1]
+        clazz = F.relu(self.bn1(self.l1(encoded)))
+        clazz = F.relu(self.bn2(self.l2(clazz)))
+        clazz = F.softmax(self.bn3(self.l3(clazz)), dim=1)
+        return clazz
+
+
+class DeepInfoAsLatent(nn.Module):
+    def __init__(self, run, epoch):
+        super().__init__()
+        model_path = Path(r'c:/data/deepinfomax/models') / Path(str(run)) / Path('encoder' + str(epoch) + '.wgt')
+        self.encoder = Encoder()
+        self.encoder.load_state_dict(torch.load(str(model_path)))
+        self.classifier = Classifier()
+
+    def forward(self, x):
+        z, features = self.encoder(x)
+        z = z.detach()
+        return self.classifier((z, features))
