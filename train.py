@@ -9,7 +9,7 @@ from torch.optim import Adam
 from tqdm import tqdm
 from pathlib import Path
 import statistics as stats
-
+import argparse
 
 class DeepInfoMaxLoss(nn.Module):
     def __init__(self, alpha=0.5, beta=1.0, gamma=0.1):
@@ -50,8 +50,12 @@ class DeepInfoMaxLoss(nn.Module):
 
 if __name__ == '__main__':
 
+    parser = argparse.ArgumentParser(description='DeepInfomax pytorch')
+    parser.add_argument('--batch_size', default=64, type=int, help='batch_size')
+    args = parser.parse_args()
+
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    batch_size = 64
+    batch_size = args.batch_size
 
     # image size 3, 32, 32
     # batch size must be an even number
