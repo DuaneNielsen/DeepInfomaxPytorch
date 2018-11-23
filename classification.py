@@ -23,6 +23,7 @@ if __name__ == '__main__':
     batch_size = 128
     num_classes = 10
     fully_supervised = False
+    reload = True
 
     # image size 3, 32, 32
     # batch size must be an even number
@@ -39,13 +40,16 @@ if __name__ == '__main__':
             models.Encoder(),
             models.Classifier()
         ).to(device)
+    elif reload:
+        classifier = torch.load('c:/data/deepinfomax/models/run4/w_dim39.mdl')
     else:
-        classifier = models.DeepInfoAsLatent('run3', 29).to(device)
+        classifier = models.DeepInfoAsLatent('run4', 140).to(device)
+        classifier.classifier.load_state_dict(torch.load())
 
-    optim = Adam(classifier.parameters())
+    optim = Adam(classifier.parameters(), lr=1e-4)
     criterion = nn.CrossEntropyLoss()
 
-    for epoch in range(40):
+    for epoch in range(40, 80):
 
         ll = []
         batch = tqdm(train_l, total=len_train // batch_size)
@@ -63,8 +67,8 @@ if __name__ == '__main__':
 
         confusion = torch.zeros(num_classes, num_classes)
         batch = tqdm(test_l, total=len_test // batch_size)
+        ll = []
         for x, target in batch:
-            ll = []
             x = x.to(device)
             target = target.to(device)
 

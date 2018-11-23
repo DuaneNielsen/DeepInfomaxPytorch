@@ -11,6 +11,7 @@ from pathlib import Path
 import statistics as stats
 import argparse
 
+
 class DeepInfoMaxLoss(nn.Module):
     def __init__(self, alpha=0.5, beta=1.0, gamma=0.1):
         super().__init__()
@@ -69,16 +70,16 @@ if __name__ == '__main__':
     optim = Adam(encoder.parameters(), lr=1e-4)
     loss_optim = Adam(loss_fn.parameters(), lr=1e-4)
 
-    epoch = None
-    root = Path(r'c:\data\deepinfomax\models\run3')
+    epoch_restart = 860
+    root = Path(r'c:\data\deepinfomax\models\run5')
 
-    if epoch is not None and root is not None:
-        enc_file = root / Path('encoder' + str(epoch) + '.wgt')
-        loss_file = root / Path('loss' + str(epoch) + '.wgt')
+    if epoch_restart is not None and root is not None:
+        enc_file = root / Path('encoder' + str(epoch_restart) + '.wgt')
+        loss_file = root / Path('loss' + str(epoch_restart) + '.wgt')
         encoder.load_state_dict(torch.load(str(enc_file)))
         loss_fn.load_state_dict(torch.load(str(loss_file)))
 
-    for epoch in range(1000):
+    for epoch in range(epoch_restart + 1, 1000):
         batch = tqdm(cifar_10_train_l, total=len(cifar_10_train_dt) // batch_size)
         train_loss = []
         for x, target in batch:
