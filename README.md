@@ -9,7 +9,6 @@ Ported most of the code from rcallands chainer implementation.  Thanks buddy!  h
 
 ### Results
 
-Note: results are questionable.. re-testing with fixes at the moment.
 
 |              |airplane |automobile | bird | cat |    deer|   dog |    frog|   horse|  ship|   truck|
 |-----------------|-------|--------|-------|-------|-------|-------|-------|-------|-------|------|
