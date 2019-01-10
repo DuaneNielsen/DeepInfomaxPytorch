@@ -13,8 +13,8 @@ Note: results are questionable.. re-testing with fixes at the moment.
 
 |              |airplane |automobile | bird | cat |    deer|   dog |    frog|   horse|  ship|   truck|
 |-----------------|-------|--------|-------|-------|-------|-------|-------|-------|-------|------|
-|Fully supervised |0.7780, 0.8907, 0.6233, 0.5606, 0.6891, 0.6420, 0.7967, 0.8206, 0.8619, 0.8291
-|DeepInfoMax-Local|0.6120, 0.6969, 0.4020, 0.4226, 0.4917, 0.5806, 0.6871, 0.5806, 0.6855, 0.5647
+|Fully supervised |0.7780 | 0.8907 | 0.6233| 0.5606| 0.6891| 0.6420| 0.7967| 0.8206| 0.8619| 0.8291
+|DeepInfoMax-Local|0.6120 | 0.6969 | 0.4020| 0.4226| 0.4917| 0.5806| 0.6871| 0.5806| 0.6855| 0.5647
                    
 
 ![alt_text](images/Figure_1.png "Figure 1")
