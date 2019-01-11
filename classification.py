@@ -7,6 +7,8 @@ from torch.optim import Adam
 from torchvision.transforms import ToTensor
 import statistics as stats
 import models
+from pathlib import Path
+
 
 def precision(confusion):
     correct = confusion * torch.eye(confusion.shape[0])
@@ -14,7 +16,10 @@ def precision(confusion):
     correct = correct.sum(0)
     incorrect = incorrect.sum(0)
     precision = correct / (correct + incorrect)
-    return precision
+    total_correct = correct.sum().item()
+    total_incorrect = incorrect.sum().item()
+    percent_correct = total_correct / (total_correct + total_incorrect)
+    return precision, percent_correct
 
 
 if __name__ == '__main__':
@@ -23,7 +28,9 @@ if __name__ == '__main__':
     batch_size = 128
     num_classes = 10
     fully_supervised = False
-    reload = True
+    reload = 169
+    run_id = 6
+    epochs = 100
 
     # image size 3, 32, 32
     # batch size must be an even number
@@ -40,16 +47,15 @@ if __name__ == '__main__':
             models.Encoder(),
             models.Classifier()
         ).to(device)
-    elif reload:
-        classifier = torch.load('c:/data/deepinfomax/models/run4/w_dim39.mdl')
     else:
-        classifier = models.DeepInfoAsLatent('run4', 140).to(device)
-        classifier.classifier.load_state_dict(torch.load())
+        classifier = models.DeepInfoAsLatent('run5', '990').to(device)
+        if reload is not None:
+            classifier = torch.load(f'c:/data/deepinfomax/models/run{run_id}/w_dim{reload}.mdl')
 
     optim = Adam(classifier.parameters(), lr=1e-4)
     criterion = nn.CrossEntropyLoss()
 
-    for epoch in range(40, 80):
+    for epoch in range(reload + 1, reload + epochs):
 
         ll = []
         batch = tqdm(train_l, total=len_train // batch_size)
@@ -61,7 +67,7 @@ if __name__ == '__main__':
             y = classifier(x)
             loss = criterion(y, target)
             ll.append(loss.detach().item())
-            batch.set_description(str(epoch) + ' Train Loss: ' + str(stats.mean(ll)))
+            batch.set_description(f'{epoch} Train Loss: {stats.mean(ll)}')
             loss.backward()
             optim.step()
 
@@ -75,7 +81,7 @@ if __name__ == '__main__':
             y = classifier(x)
             loss = criterion(y, target)
             ll.append(loss.detach().item())
-            batch.set_description(str(epoch) + 'Test Loss: ' + str(stats.mean(ll)))
+            batch.set_description(f'{epoch} Test Loss: {stats.mean(ll)}')
 
             _, predicted = y.detach().max(1)
 
@@ -85,4 +91,6 @@ if __name__ == '__main__':
         precis = precision(confusion)
         print(precis)
 
-        torch.save(classifier, 'c:/data/deepinfomax/models/run4/w_dim' + str(epoch) + '.mdl')
+        classifier_save_path = Path('c:/data/deepinfomax/models/run' + str(run_id) + '/w_dim' + str(epoch) + '.mdl')
+        classifier_save_path.parent.mkdir(parents=True, exist_ok=True)
+        torch.save(classifier, str(classifier_save_path))

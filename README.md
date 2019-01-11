@@ -7,7 +7,9 @@ Encoding data by maximimizing mutual information between the latent space and in
 
 Ported most of the code from rcallands chainer implementation.  Thanks buddy!  https://github.com/rcalland/deep-INFOMAX
 
-### Results
+Pytorch implementation by the research team [here](https://github.com/rdevon/DIM)
+
+### Current Results (work in progress)
 
 
 |              |airplane |automobile | bird | cat |    deer|   dog |    frog|   horse|  ship|   truck|

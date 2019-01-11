@@ -2,3 +2,4 @@ torch
 torchvision
 numpy
 matplotlib
+tqdm
